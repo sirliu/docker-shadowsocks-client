@@ -1,32 +1,66 @@
-FROM alpine
+#
+# Dockerfile for shadowsocks-libev
+#
 
-MAINTAINER littleqz <littleqz@gmail.com>
+FROM alpine:3.10
+MAINTAINER EasyPi Software Foundation
 
-RUN echo 'http://nl.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories \
-    && apk add -U curl libsodium python \
-    && curl -sSL https://bootstrap.pypa.io/get-pip.py | python \
-    && pip install shadowsocks \
-    && apk del curl \
-    && rm -rf /var/cache/apk/* \
-    && rm /usr/bin/sslocal
+ARG SS_VER
+ENV SS_URL https://github.com/shadowsocks/shadowsocks-libev/archive/v$SS_VER.tar.gz
+ENV SS_DIR shadowsocks-libev-$SS_VER
 
-COPY ./ss-local /usr/bin/sslocal
+RUN set -ex \
+    && apk add --no-cache c-ares \
+                          libcrypto1.1 \
+                          libev \
+                          libsodium \
+                          mbedtls \
+                          pcre \
+    && apk add --no-cache \
+               --virtual TMP autoconf \
+                             automake \
+                             build-base \
+                             c-ares-dev \
+                             curl \
+                             gettext-dev \
+                             libev-dev \
+                             libsodium-dev \
+                             libtool \
+                             linux-headers \
+                             mbedtls-dev \
+                             openssl-dev \
+                             pcre-dev \
+                             tar \
+    && curl -sSL $SS_URL | tar xz \
+    && cd $SS_DIR \
+        && curl -sSL https://github.com/shadowsocks/ipset/archive/shadowsocks.tar.gz | tar xz --strip 1 -C libipset \
+        && curl -sSL https://github.com/shadowsocks/libcork/archive/shadowsocks.tar.gz | tar xz --strip 1 -C libcork \
+        && curl -sSL https://github.com/shadowsocks/libbloom/archive/master.tar.gz | tar xz --strip 1 -C libbloom \
+        && ./autogen.sh \
+        && ./configure --disable-documentation \
+        && make install \
+        && cd .. \
+        && rm -rf $SS_DIR \
+    && apk del TMP \
+    && rm /usr/bin/ss-local -f
 
-ENV SERVER 0.0.0.0
-ENV SERVER_PORT 998
-ENV LOCAL_PORT 1080
-ENV LOCAL_ADDR 0.0.0.0
-ENV PASSWORD default
-ENV METHOD aes-256-cfb
-ENV TIMEOUT 300
+COPY ss-local /usr/bin/
 
-EXPOSE $LOCAL_PORT
+ENV SERVER_ADDR 0.0.0.0
+ENV SERVER_PORT 8388
+ENV METHOD      aes-256-cfb
+ENV PASSWORD=
+ENV TIMEOUT     60
+ENV DNS_ADDR    8.8.8.8
 
-CMD sslocal -s "$SERVER" \
-            -p "$SERVER_PORT" \
-            -l "$LOCAL_PORT" \
-            -b "$LOCAL_ADDR" \
-            -k "$PASSWORD" \
-            -m "$METHOD" \
-            -t "$TIMEOUT" \
-            -vv
+EXPOSE $SERVER_PORT/tcp
+EXPOSE $SERVER_PORT/udp
+
+CMD ss-server -s "$SERVER_ADDR" \
+              -p "$SERVER_PORT" \
+              -m "$METHOD"      \
+              -k "$PASSWORD"    \
+              -t "$TIMEOUT"     \
+              -d "$DNS_ADDR"    \
+              -u                \
+              --fast-open $OPTIONS

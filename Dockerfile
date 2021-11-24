@@ -45,22 +45,9 @@ RUN set -ex \
     && rm -f /usr/bin/ss-local
 
 COPY ss-local /usr/bin/
+COPY config.json /tmp/
 
-ENV SERVER_ADDR 0.0.0.0
-ENV SERVER_PORT 8388
-ENV METHOD      aes-256-cfb
-ENV PASSWORD=
-ENV TIMEOUT     60
-ENV DNS_ADDR    8.8.8.8
+EXPOSE 1080/tcp
+EXPOSE 1080/udp
 
-EXPOSE $SERVER_PORT/tcp
-EXPOSE $SERVER_PORT/udp
-
-CMD ss-local -s "$SERVER_ADDR" \
-              -p "$SERVER_PORT" \
-              -m "$METHOD"      \
-              -k "$PASSWORD"    \
-              -t "$TIMEOUT"     \
-              -d "$DNS_ADDR"    \
-              -u                \
-              --fast-open $OPTIONS
+CMD ss-local -c /tmp/config.json

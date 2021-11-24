@@ -1,8 +1,9 @@
 {
-  "server": "0.0.0.0",
-  "server_port": 8388,
-  "local_port": 1080,
-  "password": "5ouMnqPyzseL",
-  "timeout": 60,
-  "method": "aes-256-cfb"
+  "server":"122.9.62.9",
+  "server_port":1003,
+  "local_port":1080,
+  "local_address":"0.0.0.0",
+  "password":"a420056c3d197e3c4f6c7f20626f0c9543ebc86172974ef9bdd112043ee8ca02",
+  "timeout":60,
+  "method":"chacha20-ietf-poly1305"
 }

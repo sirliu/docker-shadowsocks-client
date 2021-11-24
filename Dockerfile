@@ -7,7 +7,10 @@ RUN echo 'http://nl.alpinelinux.org/alpine/edge/main' >> /etc/apk/repositories \
     && curl -sSL https://bootstrap.pypa.io/get-pip.py | python \
     && pip install shadowsocks \
     && apk del curl \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/cache/apk/* \
+    && rm /usr/bin/sslocal
+
+COPY ./ss-local /usr/bin/sslocal
 
 ENV SERVER 0.0.0.0
 ENV SERVER_PORT 998

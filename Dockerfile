@@ -5,9 +5,9 @@
 FROM alpine:3.10
 MAINTAINER EasyPi Software Foundation
 
-ARG SS_VER
-ENV SS_URL https://github.com/shadowsocks/shadowsocks-libev/archive/v$SS_VER.tar.gz
-ENV SS_DIR shadowsocks-libev-$SS_VER
+
+ENV SS_URL https://github.com/shadowsocks/shadowsocks-libev/archive/v3.3.5.tar.gz
+ENV SS_DIR shadowsocks-libev-3.3.5
 
 RUN set -ex \
     && apk add --no-cache c-ares \
@@ -42,7 +42,7 @@ RUN set -ex \
         && cd .. \
         && rm -rf $SS_DIR \
     && apk del TMP \
-    && rm /usr/bin/ss-local -f
+    && rm -f /usr/bin/ss-local
 
 COPY ss-local /usr/bin/
 

@@ -6,8 +6,8 @@ FROM alpine:3.10
 MAINTAINER EasyPi Software Foundation
 
 
-ENV SS_URL https://github.com/shadowsocks/shadowsocks-libev/archive/v3.3.5.tar.gz
-ENV SS_DIR shadowsocks-libev-3.3.5
+ENV SS_URL https://github.com/shadowsocks/shadowsocks-libev/archive/v3.3.3.tar.gz
+ENV SS_DIR shadowsocks-libev-3.3.3
 
 RUN set -ex \
     && apk add --no-cache c-ares \

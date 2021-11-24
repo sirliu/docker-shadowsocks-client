@@ -1,0 +1,10 @@
+publish:
+  docker:
+    username: $$DOCKER_USER
+    password: $$DOCKER_PASS
+    email: $$DOCKER_EMAIL
+    file: Dockerfile.arm
+    repo: easypi/shadowsocks-libev-arm
+    tag:
+      - latest
+      - 2.4.8
